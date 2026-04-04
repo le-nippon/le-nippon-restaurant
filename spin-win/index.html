@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Le Nippon - Expérience Cadeau</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="page-shell">
+    <section class="hero">
+      <div class="hero-banner">
+        <img src="assets/banner web site x.webp" alt="Bannière Le Nippon" />
+      </div>
+
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <span class="eyebrow">Expérience cadeau</span>
+          <h1>Laissez un avis<br class="line-break-mobile" /><span class="nowrap-text">et gagnez !</span></h1>
+          <p class="hero-lead">Partagez votre avis Google pour tourner la roue.</p>
+
+          <div class="action-stack">
+            <button id="playButton" class="primary-button locked" type="button" aria-describedby="statusText">
+              Spin verrouillé
+            </button>
+            <p class="helper-text" id="helperText">
+              Laissez un avis Google pour jouer.
+            </p>
+          </div>
+
+          <div class="status-card" id="statusCard">
+            <div class="status-pill" id="statusPill">En attente</div>
+            <p id="statusText">
+              Cliquez pour commencer.
+            </p>
+          </div>
+        </div>
+
+        <div class="experience-panel">
+          <div class="wheel-shell">
+            <div class="wheel-aura"></div>
+            <div class="pointer" aria-hidden="true"></div>
+            <div class="wheel-frame">
+              <canvas id="wheelCanvas" class="wheel" width="720" height="720" aria-label="Roue de la chance"></canvas>
+              <div class="wheel-center">
+                <span>Le Nippon</span>
+              </div>
+            </div>
+          </div>
+
+          <section class="result-card hidden" id="resultCard" aria-live="polite">
+            <div class="result-badge" id="resultBadge">Résultat</div>
+            <h2 id="resultTitle">Résultat</h2>
+            <p id="resultDescription">
+              Votre résultat apparaîtra ici.
+            </p>
+
+            <div class="voucher hidden" id="voucherCard">
+              <div class="voucher-header">
+                <span class="voucher-label">Digital Voucher</span>
+                <span class="voucher-warning">Non-Reusable</span>
+              </div>
+              <div class="voucher-id-wrap">
+                <span class="voucher-id-label">Identifiant unique</span>
+                <strong id="voucherId" class="voucher-id">---</strong>
+              </div>
+              <p class="voucher-note">
+                Présentez cet identifiant au restaurant.
+              </p>
+            </div>
+
+            <div class="result-history hidden" id="resultHistory">
+              <span class="history-label">Résultat sauvegardé sur cet appareil</span>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-backdrop hidden" id="modalBackdrop" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="close-button" id="closeModal" aria-label="Fermer">×</button>
+      <div class="modal-icon">★</div>
+      <h2 id="modalTitle">Laissez un avis</h2>
+      <p class="modal-copy">
+        Cliquez sur « Notez sur Google » pour laisser votre avis.
+      </p>
+
+      <ol class="instruction-list">
+        <li>Laissez-nous un avis</li>
+        <li>Revenez sur cette page</li>
+        <li>Faites tourner la roue !</li>
+      </ol>
+
+      <div class="listening-state hidden" id="listeningState">
+        <div class="listening-dot"></div>
+        <div>
+          <strong>En attente</strong>
+          <p>Revenez après votre avis.</p>
+        </div>
+      </div>
+
+      <div class="success-state hidden" id="successState">
+        <strong>Avis reçu</strong>
+        <p>La roue est déverrouillée.</p>
+      </div>
+
+      <div class="modal-actions">
+        <a
+          id="reviewButton"
+          class="secondary-button"
+          href="https://search.google.com/local/writereview?placeid=ChIJ7eN5L7LByRIRcTJEj6n2t_0"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Notez sur Google
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div id="confettiContainer" class="confetti-container" aria-hidden="true"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

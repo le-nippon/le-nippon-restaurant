@@ -6,8 +6,7 @@
 const REVIEW_URL =
   'https://search.google.com/local/writereview?placeid=ChIJ7eN5L7LByRIRcTJEj6n2t_0';
 
-const SEGMENTS = ['PERDU', '🎁', 'PERDU', '🎁', 'PERDU', '🎁', 'PERDU', '🎁', 'PERDU', '🎁'];
-const SEGMENT_COLORS = ['#e85d04', '#1a1a1a'];
+const SEGMENTS = ['PERDU', 'CALI AU CHOIX', 'PERDU', 'PLATEAU S4', 'PERDU', 'PLATEAU S1', 'PERDU', 'PAIRE DE BROCHETTES', 'PERDU', 'BOISSON AU CHOIX'];
 const POINTER_ANGLE = -Math.PI / 2;
 
 const playButton = document.getElementById('playButton');
@@ -17,6 +16,7 @@ const closeModal = document.getElementById('closeModal');
 const reviewButton = document.getElementById('reviewButton');
 const listeningState = document.getElementById('listeningState');
 const successState = document.getElementById('successState');
+const screenshotReminder = document.querySelector('.screenshot-reminder');
 const statusText = document.getElementById('statusText');
 const statusPill = document.getElementById('statusPill');
 const statusCard = document.getElementById('statusCard');
@@ -30,6 +30,10 @@ const voucherCard = document.getElementById('voucherCard');
 const voucherId = document.getElementById('voucherId');
 const confettiContainer = document.getElementById('confettiContainer');
 const ctx = wheelCanvas.getContext('2d');
+
+// تحميل صورة العجلة
+const wheelImage = new Image();
+wheelImage.src = 'assets/wheel-design.png';
 
 const state = {
   reviewed: localStorage.getItem(STORAGE_KEYS.reviewUnlocked) === 'true',
@@ -62,89 +66,38 @@ function resizeCanvas() {
   wheelCanvas.width = Math.round(cssSize * dpr);
   wheelCanvas.height = Math.round(cssSize * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  drawWheel(cssSize);
+  
+  if (wheelImage.complete) {
+    drawWheel(cssSize);
+  }
 }
 
 function drawWheel(size = wheelCanvas.width / (window.devicePixelRatio || 1)) {
   const cx = size / 2;
   const cy = size / 2;
-  const radius = size * 0.465;
-  const segmentAngle = (Math.PI * 2) / SEGMENTS.length;
 
   ctx.clearRect(0, 0, size, size);
 
+  // حفظ سياق الرسم
   ctx.save();
-  ctx.beginPath();
-  ctx.arc(cx, cy, radius + size * 0.01, 0, Math.PI * 2);
-  ctx.closePath();
-  ctx.fillStyle = '#120f0c';
-  ctx.shadowColor = 'rgba(0,0,0,0.22)';
-  ctx.shadowBlur = size * 0.04;
-  ctx.fill();
-  ctx.restore();
 
-  for (let index = 0; index < SEGMENTS.length; index += 1) {
-    const startAngle = -Math.PI / 2 - segmentAngle / 2 + index * segmentAngle;
-    const endAngle = startAngle + segmentAngle;
-    const midAngle = startAngle + segmentAngle / 2;
-    const color = SEGMENT_COLORS[index % 2];
+  // الانتقال إلى مركز الكانفاس
+  ctx.translate(cx, cy);
 
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, radius, startAngle, endAngle);
-    ctx.closePath();
-    ctx.fillStyle = color;
-    ctx.fill();
+  // تطبيق الدوران من المركز
+  ctx.rotate((state.currentRotation * Math.PI) / 180);
 
-    ctx.save();
-    ctx.strokeStyle = 'rgba(255,255,255,0.16)';
-    ctx.lineWidth = Math.max(1.5, size * 0.006);
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(cx + Math.cos(startAngle) * radius, cy + Math.sin(startAngle) * radius);
-    ctx.stroke();
-    ctx.restore();
+  // رسم الصورة في المركز
+  ctx.drawImage(wheelImage, -size / 2, -size / 2, size, size);
 
-    const textRadius = radius * 0.64;
-    const textX = cx + Math.cos(midAngle) * textRadius;
-    const textY = cy + Math.sin(midAngle) * textRadius;
-
-    ctx.save();
-    ctx.translate(textX, textY);
-    ctx.rotate(midAngle + Math.PI / 2);
-
-    if (SEGMENTS[index] === '🎁') {
-      ctx.font = `${Math.max(28, size * 0.085)}px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif`;
-      ctx.fillStyle = '#ffffff';
-    } else {
-      ctx.font = `800 ${Math.max(14, size * 0.035)}px Inter, system-ui, sans-serif`;
-      ctx.letterSpacing = '0.08em';
-      ctx.fillStyle = '#ffffff';
-    }
-
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(SEGMENTS[index], 0, 0);
-    ctx.restore();
-  }
-
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(cx, cy, radius * 0.21, 0, Math.PI * 2);
-  ctx.fillStyle = '#fcf8f4';
-  ctx.fill();
-  ctx.lineWidth = Math.max(4, size * 0.012);
-  ctx.strokeStyle = '#d9b38f';
-  ctx.stroke();
-  ctx.restore();
-
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(cx, cy, radius * 0.11, 0, Math.PI * 2);
-  ctx.fillStyle = '#1a1a1a';
-  ctx.fill();
+  // استعادة سياق الرسم
   ctx.restore();
 }
+
+// تحديث الرسم عند تحميل الصورة
+wheelImage.onload = () => {
+  drawWheel();
+};
 
 function openModal() {
   modalBackdrop.classList.remove('hidden');
@@ -159,11 +112,13 @@ function closeModalWindow() {
 function showListeningMode() {
   listeningState.classList.remove('hidden');
   successState.classList.add('hidden');
+  screenshotReminder.classList.remove('hidden');
 }
 
 function showReviewSuccess() {
   successState.classList.remove('hidden');
   listeningState.classList.add('hidden');
+  screenshotReminder.classList.add('hidden');
 }
 
 function setButtonLocked() {
@@ -229,10 +184,11 @@ function randomId(length = 10) {
 }
 
 function buildStoredReward(result) {
+  const isWinning = result !== 'PERDU';
   return {
     type: result,
-    segmentIndex: result === '🎁' ? 1 : 0,
-    voucherId: result === '🎁' ? `LNP-${randomId(10)}` : null,
+    segmentIndex: isWinning ? 1 : 0,
+    voucherId: isWinning ? result : null,
     claimedAt: new Date().toISOString(),
   };
 }
@@ -245,11 +201,13 @@ function renderStoredResult(reward, isHistory = false) {
   showResultCard();
   resultHistory.classList.toggle('hidden', !isHistory);
 
-  if (reward.type === '🎁') {
+  const isWinning = reward.type !== 'PERDU';
+
+  if (isWinning) {
     resultBadge.textContent = 'Gagné';
     resultTitle.textContent = 'Félicitations !';
     resultDescription.textContent =
-      'Vous avez gagné un cadeau.';
+      `Vous avez gagné: ${reward.type}`;
     voucherCard.classList.remove('hidden');
     voucherId.textContent = reward.voucherId;
   } else {
@@ -268,7 +226,7 @@ function persistReward(reward) {
   renderStoredResult(reward, false);
   updateUiFromState();
 
-  if (reward.type === '🎁') {
+  if (reward.type !== 'PERDU') {
     launchConfettiBurst();
   }
 }
@@ -284,7 +242,8 @@ function animateWheelTo(targetRotation) {
     const eased = easeOutQuint(progress);
     const current = startRotation + (targetRotation - startRotation) * eased;
 
-    wheelCanvas.style.transform = `rotate(${current}deg)`;
+    state.currentRotation = current;
+    drawWheel();
 
     if (progress < 1) {
       requestAnimationFrame(frame);
@@ -292,7 +251,6 @@ function animateWheelTo(targetRotation) {
     }
 
     state.currentRotation = targetRotation;
-    state.isSpinning = false;
   }
 
   requestAnimationFrame(frame);

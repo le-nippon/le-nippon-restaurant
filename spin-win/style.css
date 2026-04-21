@@ -425,42 +425,23 @@ h1 {
 }
 
 .wheel-center {
-  position: absolute;
-  inset: 50%;
-  width: 25%;
-  height: 25%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 30% 30%, #fff7e8, #f5d9a5 68%, #d4a652 100%);
-  box-shadow:
-    0 10px 24px rgba(26, 26, 26, 0.14),
-    inset 0 2px 6px rgba(255, 255, 255, 0.65);
-  display: grid;
-  place-items: center;
-  text-align: center;
-  padding: 10px;
+  display: none !important;
 }
 
 .wheel-center span {
-  font-size: clamp(0.56rem, 1.6vw, 0.86rem);
-  font-weight: 900;
-  line-height: 1.1;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--charcoal);
+  display: none !important;
 }
 
 .pointer {
   position: absolute;
-  top: 0;
+  top: -2px;
   z-index: 2;
   width: 0;
   height: 0;
-  border-left: 18px solid transparent;
-  border-right: 18px solid transparent;
-  border-top: 34px solid var(--gold);
-  filter: drop-shadow(0 10px 18px rgba(26, 26, 26, 0.22));
+  border-left: 16px solid transparent;
+  border-right: 16px solid transparent;
+  border-top: 38px solid #e85d04;
+  filter: drop-shadow(0 3px 8px rgba(232, 93, 4, 0.4)) drop-shadow(0 1px 3px rgba(232, 93, 4, 0.2));
 }
 
 .result-card {
@@ -509,7 +490,7 @@ h1 {
 
 .voucher {
   display: grid;
-  gap: 18px;
+  gap: 16px;
   padding: 18px;
   margin-top: 4px;
   border-radius: 22px;
@@ -519,19 +500,40 @@ h1 {
   color: #fff;
   overflow: hidden;
   position: relative;
+  justify-items: center;
+  mask-image: radial-gradient(circle at 0 50%, transparent 15px, black 16px), radial-gradient(circle at 100% 50%, transparent 15px, black 16px);
+  mask-composite: intersect;
+  -webkit-mask-image: radial-gradient(circle at 0 50%, transparent 15px, black 16px), radial-gradient(circle at 100% 50%, transparent 15px, black 16px);
+  -webkit-mask-composite: source-in;
 }
 
-.voucher::before,
-.voucher::after {
+.voucher-instruction {
+  margin: 8px 0 0 0;
+  padding: 0;
+  color: #ffffff !important;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  text-align: center;
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
+}
+
+.voucher::before {
   content: "";
   position: absolute;
-  top: 50%;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #fff7f1;
-  transform: translateY(-50%);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 20%, rgba(0, 0, 0, 0.6) 40%, rgba(0, 0, 0, 0.6) 60%, transparent 80%);
+  filter: blur(40px);
+
+  pointer-events: none;
+  animation: darkShimmer 4s linear infinite;
 }
+
+
 
 .voucher::before {
   left: -14px;
@@ -543,9 +545,11 @@ h1 {
 
 .voucher-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   gap: 12px;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
 }
 
 .voucher-label {
@@ -561,23 +565,32 @@ h1 {
 }
 
 .voucher-id-wrap {
-  display: grid;
-  gap: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
 }
 
 .voucher-id-label {
   font-size: 0.84rem;
-  color: rgba(255, 255, 255, 0.72);
+  color: #ffffff;
+  text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 .voucher-id {
   font-size: clamp(1.35rem, 4vw, 2rem);
   letter-spacing: 0.16em;
-}
-
-.voucher-note {
-  color: rgba(255, 255, 255, 0.74);
-  font-size: 0.94rem;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(90deg, #f4c95d, #ffffff, #f4c95d);
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s infinite;
 }
 
 .modal-backdrop {
@@ -700,6 +713,21 @@ h1 {
   margin-top: 4px;
 }
 
+.screenshot-reminder {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(232, 93, 4, 0.1);
+  border-left: 4px solid var(--accent);
+  margin-top: 8px;
+}
+
+.screenshot-reminder p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
 .confetti-container {
   position: fixed;
   inset: 0;
@@ -788,6 +816,24 @@ h1 {
   to {
     opacity: 0;
     backdrop-filter: blur(0px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes darkShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
   }
 }
 
@@ -1014,8 +1060,9 @@ h1 {
   }
 
   .voucher-header {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .voucher-id {
